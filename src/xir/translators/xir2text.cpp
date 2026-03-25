@@ -30,6 +30,7 @@
 #include <luisa/xir/instructions/raster_discard.h>
 #include <luisa/xir/instructions/return.h>
 #include <luisa/xir/instructions/resource.h>
+#include <luisa/xir/instructions/suspend.h>
 #include <luisa/xir/instructions/store.h>
 #include <luisa/xir/instructions/switch.h>
 #include <luisa/xir/instructions/thread_group.h>
@@ -213,6 +214,41 @@ private:
             auto x = static_cast<const uint8_t *>(c->data())[i];
             _prelude << luisa::format("{:02x}", static_cast<uint>(x));
         }
+
+        // pretty print scalar constants
+        // ripped from debug_printer.cpp (?? why is that one not used)
+        auto print_scalar = [&]<typename T>(T x, const void* data) noexcept {
+            luisa::string s {};
+            std::memcpy(&x, data, sizeof(T));
+            if constexpr (std::is_same_v<T, bool>) {
+                s.append(x ? "true" : "false");
+            } else if constexpr (luisa::is_floating_point_v<T>) {
+                luisa::format_to(std::back_inserter(s), "{:.3f}", static_cast<double>(x));
+            } else if constexpr (luisa::is_signed_integral_v<T>) {
+                luisa::format_to(std::back_inserter(s), "{}", static_cast<int64_t>(x));
+            } else if constexpr (luisa::is_unsigned_integral_v<T>) {
+                luisa::format_to(std::back_inserter(s), "{}", static_cast<uint64_t>(x));
+            }
+
+            _prelude << luisa::format(" ({})", s);
+        };
+
+        switch (c->type()->tag()) {
+            case Type::Tag::BOOL: print_scalar(bool{}, c->data()); break;
+            case Type::Tag::INT8: print_scalar(int8_t{}, c->data()); break;
+            case Type::Tag::UINT8: print_scalar(uint8_t{}, c->data()); break;
+            case Type::Tag::INT16: print_scalar(int16_t{}, c->data()); break;
+            case Type::Tag::UINT16: print_scalar(uint16_t{}, c->data()); break;
+            case Type::Tag::INT32: print_scalar(int32_t{}, c->data()); break;
+            case Type::Tag::UINT32: print_scalar(uint32_t{}, c->data()); break;
+            case Type::Tag::INT64: print_scalar(int64_t{}, c->data()); break;
+            case Type::Tag::UINT64: print_scalar(uint64_t{}, c->data()); break;
+            case Type::Tag::FLOAT16: print_scalar(half{}, c->data()); break;
+            case Type::Tag::FLOAT32: print_scalar(float{}, c->data()); break;
+            case Type::Tag::FLOAT64: print_scalar(double{}, c->data()); break;
+            default: break;
+        }
+
         _prelude << ";";
         _emit_use_debug_info(_prelude, c->use_list());
         _prelude << "\n\n";
@@ -468,6 +504,10 @@ private:
               << _value_ident(inst->false_block());
     }
 
+    void _emit_suspend_inst(const SuspendInst *inst) noexcept {
+        _main << "suspend";
+    }
+
     void _emit_instruction(const Instruction *inst, int indent) noexcept {
         if (!inst->metadata_list().empty()) {
             _emit_indent(indent);
@@ -585,6 +625,9 @@ private:
                 break;
             case DerivedInstructionTag::DEBUG_BREAK:
                 _emit_debug_break_inst(static_cast<const DebugBreakInst *>(inst));
+                break;
+            case DerivedInstructionTag::SUSPEND:
+                _emit_suspend_inst(static_cast<const SuspendInst *>(inst));
                 break;
         }
         _main << ";";
