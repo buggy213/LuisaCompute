@@ -22,15 +22,11 @@ struct AccessChainIndex {
     };
 
     static AccessChainIndex make_static(int32_t index) noexcept {
-        AccessChainIndex r;
-        r.tag = STATIC;
-        r.static_index = index;
+        AccessChainIndex r { STATIC, { .static_index = index } };
         return r;
     }
     static AccessChainIndex make_dynamic(Value *v) noexcept {
-        AccessChainIndex r;
-        r.tag = DYNAMIC;
-        r.dynamic_value = v;
+        AccessChainIndex r { DYNAMIC, { .dynamic_value = v } };
         return r;
     }
 
@@ -91,7 +87,7 @@ public:
     [[nodiscard]] bool has_root(Value *v) const noexcept;
     [[nodiscard]] NodeRef root(Value *v) const noexcept;
 
-    // Insert: mark that `value` is accessed at the given access chain.
+    // Insert: mark that `value` is accessed through the given access chain.
     // An empty chain means the value is accessed as a whole.
     void insert(Value *value, luisa::span<const AccessChainIndex> chain) noexcept;
 

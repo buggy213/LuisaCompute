@@ -1,6 +1,6 @@
 #include <luisa/core/logging.h>
 #include <luisa/xir/function.h>
-#include <luisa/xir/basic_block.h>
+#include <luisa/xir/module.h>
 #include <luisa/xir/instructions/break.h>
 #include <luisa/xir/instructions/continue.h>
 #include <luisa/xir/instructions/loop.h>
@@ -10,11 +10,13 @@
 
 namespace luisa::compute::xir {
 
+namespace detail {
+
 // TODO: implement SimpleLoop → Loop conversion and Break/Continue elimination.
 // For now, this pass validates that the function is already normalized
 // (only IfInst, SwitchInst, LoopInst as CF) and runs early return elimination.
 
-void coro_normalize_cf_pass(FunctionDefinition *function) noexcept {
+static void coro_normalize_cf_pass(FunctionDefinition *function) noexcept {
     LUISA_ASSERT(function != nullptr, "Null function passed to coro_normalize_cf_pass.");
     LUISA_ASSERT(function->is_coroutine(), "Function is not marked as a coroutine.");
 
@@ -44,5 +46,20 @@ void coro_normalize_cf_pass(FunctionDefinition *function) noexcept {
         }
     });
 }
+
+}// namespace detail
+
+void coro_normalize_cf_pass_run_on_function(FunctionDefinition *function) noexcept {
+    detail::coro_normalize_cf_pass(function);
+}
+
+void coro_normalize_cf_pass_run_on_module(Module *module) noexcept {
+    for (auto f : module->function_list()) {
+        if (auto f_defn = f->definition(); f_defn != nullptr && f_defn->is_coroutine()) {
+            detail::coro_normalize_cf_pass(f_defn);
+        }
+    }
+}
+
 
 }// namespace luisa::compute::xir

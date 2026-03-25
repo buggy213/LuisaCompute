@@ -12,6 +12,7 @@ class FunctionDefinition;
 // ReturnInst are all eliminated.
 //
 // Must be run before CoroGraph analysis.
-LUISA_XIR_API void coro_normalize_cf_pass(FunctionDefinition *function) noexcept;
+LUISA_XIR_API void coro_normalize_cf_pass_run_on_function(FunctionDefinition *function) noexcept;
+LUISA_XIR_API void coro_normalize_cf_pass_run_on_module(Module *module) noexcept;
 
 }// namespace luisa::compute::xir

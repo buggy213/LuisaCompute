@@ -103,6 +103,7 @@ luisa_compute_add_executable(test_blackhole test_blackhole.cpp)
 
 # XIR tests
 luisa_compute_add_executable(test_ast_to_xir test_ast_to_xir.cpp)
+luisa_compute_add_executable(test_coro_xir test_coro_xir.cpp)
 
 if (LUISA_COMPUTE_ENABLE_CLANG_CXX)
     luisa_compute_add_executable(clangcxx_compiler clangcxx_compiler.cpp)
