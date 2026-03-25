@@ -87,6 +87,10 @@ RasterDiscardInst *XIRBuilder::raster_discard() noexcept {
     return _create_and_append_instruction<RasterDiscardInst>(_insertion_point->parent_block());
 }
 
+SuspendInst *XIRBuilder::suspend_(luisa::string_view tag) noexcept {
+    return _create_and_append_instruction<SuspendInst>(_insertion_point->parent_block(), luisa::string{tag});
+}
+
 CallInst *XIRBuilder::call(const Type *type, Function *callee, luisa::span<Value *const> arguments) noexcept {
     return _create_and_append_instruction<CallInst>(_insertion_point->parent_block(), type, callee, arguments);
 }

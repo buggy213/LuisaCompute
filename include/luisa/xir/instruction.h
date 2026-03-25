@@ -69,6 +69,9 @@ enum struct DerivedInstructionTag {
     ASSUME,// assumption
 
     OUTLINE,// mark that the body might be outlined (e.g., for faster compilation)
+
+    /* coroutine support */
+    SUSPEND,// basic block terminator: coroutine suspension point
 };
 
 [[nodiscard]] constexpr luisa::string_view to_string(DerivedInstructionTag tag) noexcept {
@@ -111,6 +114,7 @@ enum struct DerivedInstructionTag {
         case DerivedInstructionTag::OUTLINE: return "outline"sv;
         case DerivedInstructionTag::AUTODIFF_SCOPE: return "autodiff_scope"sv;
         case DerivedInstructionTag::AUTODIFF_INTRINSIC: return "autodiff_intrinsic"sv;
+        case DerivedInstructionTag::SUSPEND: return "suspend"sv;
     }
     return "unknown"sv;
 }

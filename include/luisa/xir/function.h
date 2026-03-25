@@ -92,6 +92,7 @@ class LUISA_XIR_API FunctionDefinition : public Function {
 
 private:
     BasicBlock *_body_block{nullptr};
+    bool _is_coroutine{false};
 
 public:
     using Function::Function;
@@ -101,6 +102,9 @@ public:
 
     [[nodiscard]] BasicBlock *body_block() noexcept { return _body_block; }
     [[nodiscard]] const BasicBlock *body_block() const noexcept { return _body_block; }
+
+    void set_coroutine(bool is_coroutine) noexcept { _is_coroutine = is_coroutine; }
+    [[nodiscard]] bool is_coroutine() const noexcept { return _is_coroutine; }
 
     [[nodiscard]] FunctionDefinition *definition() noexcept final { return this; }
 

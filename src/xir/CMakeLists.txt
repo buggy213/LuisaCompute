@@ -43,6 +43,7 @@ set(LUISA_COMPUTE_XIR_SOURCES
         instructions/switch.cpp
         instructions/thread_group.cpp
         instructions/unreachable.cpp
+        instructions/suspend.cpp
 
         # derived metadata
         metadata/location.cpp
@@ -77,6 +78,11 @@ set(LUISA_COMPUTE_XIR_SOURCES
         passes/unused_callable_removal.cpp
         passes/reg2mem.cpp
         passes/promote_ref_arg.cpp
+
+        # coroutine passes
+        passes/coro_access_tree.cpp
+        passes/coro_normalize_cf.cpp
+        passes/coro_graph.cpp
 )
 
 add_library(luisa-compute-xir SHARED ${LUISA_COMPUTE_XIR_SOURCES})

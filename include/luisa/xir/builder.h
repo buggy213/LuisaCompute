@@ -30,6 +30,7 @@
 #include <luisa/xir/instructions/switch.h>
 #include <luisa/xir/instructions/thread_group.h>
 #include <luisa/xir/instructions/unreachable.h>
+#include <luisa/xir/instructions/suspend.h>
 
 namespace luisa::compute::xir {
 
@@ -72,6 +73,8 @@ public:
     ReturnInst *return_(Value *value) noexcept;
     ReturnInst *return_void() noexcept;
     RasterDiscardInst *raster_discard() noexcept;
+
+    SuspendInst *suspend_(luisa::string_view tag = {}) noexcept;
 
     AssertInst *assert_(Value *condition, luisa::string_view message = {}) noexcept;
     AssumeInst *assume_(Value *condition, luisa::string_view message = {}) noexcept;
